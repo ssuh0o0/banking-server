@@ -38,4 +38,11 @@ public class User {
         this.username = username;
     }
 
+    //== 비즈니스 로직 ==/
+    public boolean checkPassword(String password) {
+        if (this.password.equals(password)) {
+            return true;
+        }
+        return false;
+    }
 }
