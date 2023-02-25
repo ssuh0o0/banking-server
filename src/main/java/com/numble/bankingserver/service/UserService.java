@@ -6,10 +6,8 @@ import com.numble.bankingserver.dto.ChangePasswordDto;
 import com.numble.bankingserver.dto.JoinRequestDto;
 import com.numble.bankingserver.dto.LoginRequestDto;
 import com.numble.bankingserver.dto.MakeFriendDto;
-import com.numble.bankingserver.repository.FriendRelationRepository;
 import com.numble.bankingserver.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final FriendRelationRepository friendRelationRepository;
 
     private void duplicateUser(String loginId) {
         userRepository.findByLoginId(loginId).ifPresent(u -> {
