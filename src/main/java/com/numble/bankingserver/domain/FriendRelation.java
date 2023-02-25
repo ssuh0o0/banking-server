@@ -1,6 +1,7 @@
 package com.numble.bankingserver.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,18 +16,15 @@ public class FriendRelation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "from_friend_id")
-    private User fromFriendId;
+    @JoinColumn(name = "friend")
+    private User friend;
 
-    @ManyToOne
-    @JoinColumn(name = "to_friend_id")
-    private User toFriendId;
-
-    public void setFromFriendId(User from) {
-        this.fromFriendId = from;
+    public void setFriend(User friend) {
+        this.friend = friend;
     }
 
-    public void setToFriendId(User to) {
-        this.toFriendId = to;
+    @Builder
+    public FriendRelation(User friend){
+        this.friend = friend;
     }
 }

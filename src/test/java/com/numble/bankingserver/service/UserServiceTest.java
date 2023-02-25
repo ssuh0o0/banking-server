@@ -1,8 +1,10 @@
 package com.numble.bankingserver.service;
 
 import com.numble.bankingserver.domain.User;
+import com.numble.bankingserver.dto.ChangePasswordDto;
 import com.numble.bankingserver.dto.JoinRequestDto;
 import com.numble.bankingserver.dto.LoginRequestDto;
+import com.numble.bankingserver.dto.MakeFriendDto;
 import com.numble.bankingserver.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -29,13 +31,11 @@ class UserServiceTest {
 
     @BeforeEach
     public void setUser() {
-        User user = User.builder()
+        userRepository.save(User.builder()
                 .loginId("test")
                 .password("test123")
                 .username("test-name")
-                .build();
-
-        userRepository.save(user);
+                .build());
     }
 
     @AfterEach
@@ -89,5 +89,56 @@ class UserServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("ID와 비밀번호가 일치하지 않습니다.");
 
+    }
+    
+    @Test
+    public void ChangePassword_changePassword_True() throws Exception {
+        //given
+        ChangePasswordDto user = ChangePasswordDto.builder()
+                .loginId("test")
+                .newPassword("newPassword")
+                .build();
+
+        //when
+        userService.changePassword(user);
+        User findUser = userRepository.findByLoginId("test").orElseThrow(NullPointerException::new);
+
+        //then
+        assertEquals(findUser.getPassword(), "newPassword");
+    }
+    
+    @Test
+    public void MakeFriend_makeFriendRelation_True() throws Exception {
+        //given
+        userRepository.save(User.builder()
+                .loginId("test2")
+                .password("test1234")
+                .build());
+
+        userRepository.save(User.builder()
+                .loginId("test3")
+                .password("test1234")
+                .build());
+
+        MakeFriendDto makeFriendDto = MakeFriendDto.builder()
+                .from("test")
+                .to("test2")
+                .build();
+
+        MakeFriendDto makeFriendDto2 = MakeFriendDto.builder()
+                .from("test")
+                .to("test3")
+                .build();
+        //when
+        userService.makeFriend(makeFriendDto);
+        userService.makeFriend(makeFriendDto2);
+        User fromUser = userRepository.findByLoginId("test").orElseThrow(NullPointerException::new);
+
+        //then
+        assertAll(
+                () -> assertEquals(fromUser.getFriendRelations().get(0).getFriend().getLoginId(), "test2"),
+                () -> assertEquals(fromUser.getFriendRelations().get(1).getFriend().getLoginId(), "test3")
+        );
+     
     }
 }
