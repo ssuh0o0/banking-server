@@ -7,6 +7,7 @@ import com.numble.bankingserver.dto.DepositDto;
 import com.numble.bankingserver.dto.FindMyAccountDto;
 import com.numble.bankingserver.dto.SendMoneyDto;
 import com.numble.bankingserver.dto.WithdrawDto;
+import com.numble.bankingserver.global.lock.LockManager;
 import com.numble.bankingserver.repository.AccountRepository;
 import com.numble.bankingserver.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     private final UserRepository userRepository;
+
 
     public void deposit(DepositDto depositDto){
         findAccount(depositDto.account, depositDto.getLoginId()).deposit(depositDto.money);
@@ -51,16 +53,20 @@ public class AccountService {
             }
         }
 
-        if (IsFriend) toAccount.deposit(sendMoneyDto.money);
+        if (IsFriend) {
+            fromAccount.withdraw(sendMoneyDto.money);
+            toAccount.deposit(sendMoneyDto.money);
+        }
         else {
             throw new IllegalStateException("친구가 아닌 관계에서는 이체가 불가능합니다.");
         }
     }
 
     // 내 계좌만 조회 가능하기 위해 토큰 설정 해야함.
+    // 헤더에 내 계정임을 알 수 있는 것을 보내야할 듯 ㅠ
     public void findMyAccount(FindMyAccountDto findMyAccountDto){
-        Account myAccount = accountRepository.findByLoginId(findMyAccountDto.loginId).orElseThrow(IllegalArgumentException::new);
-        User myUser = userRepository.findById(myAccount.getUserId()).orElseThrow(IllegalArgumentException::new);
+        User myUser = userRepository.findByLoginId(findMyAccountDto.loginId).orElseThrow(IllegalArgumentException::new);
+        Account myAccount = accountRepository.findByUserId(myUser.getId()).orElseThrow(IllegalArgumentException::new);
         if (myUser.checkPassword(findMyAccountDto.password)){
             throw new IllegalStateException("비밀번호가 틀렸습니다.");
         }

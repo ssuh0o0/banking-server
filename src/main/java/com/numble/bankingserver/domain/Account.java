@@ -1,11 +1,11 @@
 package com.numble.bankingserver.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,10 +24,10 @@ public class Account {
     @GeneratedValue
     private Long id;
 
-    @NotBlank
+    @NotNull
     private Long userId;
 
-    @UniqueElements
+    @NotBlank
     private String account;
 
     @Value("0")
@@ -43,7 +43,7 @@ public class Account {
     }
 
     //== 객체 확인 메서드 ==/
-    private static final Pattern PATTERN = Pattern.compile("([0-9,\\-]{3,6}\\-[0-9,\\-]{2,6}\\-[0-9,\\-])");
+    private static final Pattern PATTERN = Pattern.compile("[\\d\\-]+");
 
     private void isAccount(String account){
         if (!PATTERN.matcher(account).matches()) {
@@ -61,7 +61,11 @@ public class Account {
      * 계좌 출급
      */
     public void withdraw(Long money){
-        this.balance -= money;
+        if (this.balance - money > 0){
+            this.balance -= money;
+        } else{
+            throw new IllegalStateException("잔액이 부족합니다.");
+        }
     }
 
 }

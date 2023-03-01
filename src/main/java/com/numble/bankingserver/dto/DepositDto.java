@@ -1,5 +1,6 @@
 package com.numble.bankingserver.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,10 +8,17 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DepositDto {
 
-    public String LoginId;
+    public String loginId;
 
     public String account;
 
     public Long money;
+
+    @Builder
+    public DepositDto(String loginId, String account, Long money) {
+        this.loginId = loginId;
+        this.account = account;
+        this.money = money;
+    }
 
 }
