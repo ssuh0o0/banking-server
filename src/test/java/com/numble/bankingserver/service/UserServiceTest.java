@@ -30,7 +30,7 @@ class UserServiceTest {
     UserService userService;
 
     @BeforeEach
-    public void setUser() {
+    public void setUp() {
         userRepository.save(User.builder()
                 .loginId("test")
                 .password("test123")
@@ -39,7 +39,7 @@ class UserServiceTest {
     }
 
     @AfterEach
-    public void resetUser() {
+    public void reset() {
         userRepository.deleteByLoginId("test");
     }
 

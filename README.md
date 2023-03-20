@@ -49,5 +49,6 @@
 
 <br/>
 
-## Decription
+## ERD
 ---
+![image](https://user-images.githubusercontent.com/55631147/222216030-daaff612-1128-4f83-a5d4-e8cab7c20cde.png)
