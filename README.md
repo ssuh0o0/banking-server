@@ -33,10 +33,10 @@
 * Framework & Language
     * Spring Boot 3.0.2
     * Java 17
+    * Spring-Security
 
 * Library
     * Spring-Data-JPA
-    * Spring-Security
     * Spring-Web
     * Lombok
     * Jacoco 0.8.8
