@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FindMyAccountDto {
 
-    public String loginId;
-    public String password;
+    public String account;
+    public String accountPassword;
 
     @Builder
-    public FindMyAccountDto(String loginId, String password) {
-        this.loginId = loginId;
-        this.password = password;
+    public FindMyAccountDto(String account, String accountPassword) {
+        this.account = account;
+        this.accountPassword = accountPassword;
     }
 
 }
