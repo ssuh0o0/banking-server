@@ -8,15 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 public class WithdrawDto {
 
-    public String loginId;
-
     public String account;
 
     public Long money;
 
     @Builder
-    public WithdrawDto(String loginId, String account, Long money) {
-        this.loginId = loginId;
+    public WithdrawDto( String account, Long money) {
         this.account = account;
         this.money = money;
     }
