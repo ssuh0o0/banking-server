@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Entity
@@ -30,15 +31,19 @@ public class Account {
     @NotBlank
     private String account;
 
+    @NotBlank
+    private String accountPassword;
+
     @Value("0")
     private Long balance;
 
     @Builder
-    public Account(Long userId, String account, Long balance) {
+    public Account(Long userId, String account, String accountPassword, Long balance) {
         isAccount(account);
 
         this.userId = userId;
         this.account = account;
+        this.accountPassword = accountPassword;
         this.balance = balance;
     }
 
@@ -67,5 +72,16 @@ public class Account {
             throw new IllegalStateException("잔액이 부족합니다.");
         }
     }
+
+    /*
+     * 계좌 비밀번호 체크
+     */
+    public boolean checkPassword(String accountPassword) {
+        if (this.accountPassword.equals(accountPassword)) {
+            return true;
+        }
+        return false;
+    }
+
 
 }
