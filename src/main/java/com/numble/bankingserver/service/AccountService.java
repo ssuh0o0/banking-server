@@ -11,6 +11,7 @@ import com.numble.bankingserver.global.exception.AccountException;
 import com.numble.bankingserver.global.exceptionHandler.BasicException;
 import com.numble.bankingserver.repository.AccountRepository;
 import com.numble.bankingserver.repository.UserRepository;
+import com.numble.bankingserver.service.concurrency.AccountConcurrency;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,17 +30,20 @@ public class AccountService {
 
     private final UserRepository userRepository;
 
+    private final AccountConcurrency accountConcurrency;
 
+    /**
+     * Controller에 연결되는 service 메서드
+     */
     public void deposit(DepositDto depositDto){
-        findAccount(depositDto.account, depositDto.getLoginId()).deposit(depositDto.money);
+        accountConcurrency.depositWithLock(depositDto.account, depositDto.money);
     }
 
     public void withdraw(WithdrawDto withdrawDto){
-        findAccount(withdrawDto.account, withdrawDto.getLoginId()).withdraw(withdrawDto.money);
+        accountConcurrency.withdrawWithLock(withdrawDto.account, withdrawDto.money);
     }
-    
 
-    public void sendMoney(SendMoneyDto sendMoneyDto){
+    public void send(SendMoneyDto sendMoneyDto){
 
         Account fromAccount = accountRepository.findByAccount(sendMoneyDto.fromAccount)
                 .orElseThrow(()-> new BasicException(AccountException.ACCOUNT_NOT_FOUND));
@@ -52,6 +56,37 @@ public class AccountService {
         /**
          *  친구인지 확인하고 전송하는 로직 -> 락으로 트랜잭션 관리
          */
+        accountConcurrency.sendWithLock(fromAccount.getAccount(), sendMoneyDto.fromPassword, toAccount.getAccount(), sendMoneyDto.money);
+    }
+
+
+    /**
+     * Lock에서 사용하기 위한 기본 실행 메서드
+     */
+    public void depositMoney(DepositDto depositDto){
+        findAccountWithOptimisticLock(depositDto.account).deposit(depositDto.money);
+    }
+
+    public void withdrawMoney(WithdrawDto withdrawDto){
+        findAccountWithOptimisticLock(withdrawDto.account).withdraw(withdrawDto.money);
+    }
+
+
+    public void sendMoney(SendMoneyDto sendMoneyDto){
+
+        Account fromAccount = findAccountWithOptimisticLock(sendMoneyDto.fromAccount);
+        Account toAccount = findAccountWithOptimisticLock(sendMoneyDto.toAccount);
+
+        if (fromAccount.checkPassword(sendMoneyDto.fromPassword)){
+            throw new BasicException(AccountException.UNAUTHORIZED_PASSWORD);
+        }
+
+        if (fromAccount == toAccount){
+            throw new BasicException(AccountException.MY_ACCOUNT_FAIL);
+        }
+
+        fromAccount.withdraw(sendMoneyDto.money);
+        toAccount.withdraw(sendMoneyDto.money);
     }
 
     @Transactional(readOnly=true)
@@ -64,13 +99,10 @@ public class AccountService {
         }
     }
 
-    private Account findAccount(String account, String loginId) {
-        Account findAccount = accountRepository.findByAccount(account).orElseThrow(IllegalArgumentException::new);
-        User findUser = userRepository.findByLoginId(loginId).orElseThrow(IllegalArgumentException::new);
-        if (!findAccount.getUserId().equals(findUser.getId())){
-            throw new IllegalStateException("본인의 계좌가 아닙니다.");
-        }
-        return findAccount;
+
+    private Account findAccountWithOptimisticLock(String account) {
+        return accountRepository.findByAccountNumberWithOptimisticLock(account)
+                .orElseThrow(() -> new BasicException(AccountException.ACCOUNT_NOT_FOUND));
     }
 
 

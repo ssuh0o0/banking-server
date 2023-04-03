@@ -41,7 +41,7 @@ public class AccountController {
 
     @PostMapping({"/send"})
     public SuccessResponse sendMoney(@Validated @RequestBody final SendMoneyDto requestDto) {
-        accountService.sendMoney(requestDto);
+        accountService.send(requestDto);
         SuccessResponse res = SuccessResponse.builder()
                 .status(ResponseStatus.OK)
                 .message("Success Send Money")
