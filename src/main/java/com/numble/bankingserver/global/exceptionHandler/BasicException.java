@@ -1,5 +1,6 @@
 package com.numble.bankingserver.global.exceptionHandler;
 
+import com.numble.bankingserver.global.exception.AccountException;
 import lombok.Getter;
 
 @Getter

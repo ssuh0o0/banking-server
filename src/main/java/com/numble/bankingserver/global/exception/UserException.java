@@ -1,11 +1,11 @@
 package com.numble.bankingserver.global.exception;
 
-
+import com.numble.bankingserver.global.exceptionHandler.ExceptionType;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum UserException {
+public enum UserException implements ExceptionType {
 
 
     NOT_FOUND_MEMBER("NOT_FOUND_MEMBER", "회원을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
@@ -18,6 +18,21 @@ public enum UserException {
     String errorCode;
     String message;
     HttpStatus status;
+
+    @Override
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public HttpStatus getStatus() {
+        return status;
+    }
 
     UserException(String errorCode, String message, HttpStatus status) {
         this.errorCode = errorCode;

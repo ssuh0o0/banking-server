@@ -8,15 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DepositDto {
 
-    public String loginId;
-
     public String account;
 
     public Long money;
 
     @Builder
-    public DepositDto(String loginId, String account, Long money) {
-        this.loginId = loginId;
+    public DepositDto(String account, Long money) {
         this.account = account;
         this.money = money;
     }

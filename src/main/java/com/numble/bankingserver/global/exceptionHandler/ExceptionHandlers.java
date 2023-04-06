@@ -7,6 +7,6 @@ public class ExceptionHandlers {
 
     @ExceptionHandler(BasicException.class)
     public ResponseEntity<ErrFormat> basicException(BasicException e){
-        return new ResponseEntity<>(ErrFormat.create(e.getExceptionType()), e.getExceptionType().getHttpStatus());
+        return new ResponseEntity<>(ErrFormat.create(e.getExceptionType()), e.getExceptionType().getStatus());
     }
 }
