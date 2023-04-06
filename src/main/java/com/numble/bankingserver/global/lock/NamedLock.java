@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import java.sql.PreparedStatement;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Map;
  * JdbcTemplate 을 이용하여 USER LEVEL LOCK 을 사용하는 클래스
  */
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class NamedLock implements LockManager{
 

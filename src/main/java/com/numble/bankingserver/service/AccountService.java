@@ -28,8 +28,6 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    private final UserRepository userRepository;
-
     private final AccountConcurrency accountConcurrency;
 
     /**
@@ -60,35 +58,6 @@ public class AccountService {
     }
 
 
-    /**
-     * Lock에서 사용하기 위한 기본 실행 메서드
-     */
-    public void depositMoney(DepositDto depositDto){
-        findAccountWithOptimisticLock(depositDto.account).deposit(depositDto.money);
-    }
-
-    public void withdrawMoney(WithdrawDto withdrawDto){
-        findAccountWithOptimisticLock(withdrawDto.account).withdraw(withdrawDto.money);
-    }
-
-
-    public void sendMoney(SendMoneyDto sendMoneyDto){
-
-        Account fromAccount = findAccountWithOptimisticLock(sendMoneyDto.fromAccount);
-        Account toAccount = findAccountWithOptimisticLock(sendMoneyDto.toAccount);
-
-        if (fromAccount.checkPassword(sendMoneyDto.fromPassword)){
-            throw new BasicException(AccountException.UNAUTHORIZED_PASSWORD);
-        }
-
-        if (fromAccount == toAccount){
-            throw new BasicException(AccountException.MY_ACCOUNT_FAIL);
-        }
-
-        fromAccount.withdraw(sendMoneyDto.money);
-        toAccount.withdraw(sendMoneyDto.money);
-    }
-
     @Transactional(readOnly=true)
     public void findMyAccount(FindMyAccountDto findMyAccountDto){
         Account myAccount = accountRepository.findAccountByAccount(findMyAccountDto.account)
@@ -100,10 +69,7 @@ public class AccountService {
     }
 
 
-    private Account findAccountWithOptimisticLock(String account) {
-        return accountRepository.findByAccountNumberWithOptimisticLock(account)
-                .orElseThrow(() -> new BasicException(AccountException.ACCOUNT_NOT_FOUND));
-    }
+
 
 
 }

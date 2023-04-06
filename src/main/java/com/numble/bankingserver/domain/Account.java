@@ -1,8 +1,6 @@
 package com.numble.bankingserver.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +23,9 @@ public class Account {
     @GeneratedValue
     private Long id;
 
-    @NotNull
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private User owner;
 
     @NotBlank
     private String account;
@@ -38,10 +37,10 @@ public class Account {
     private Long balance;
 
     @Builder
-    public Account(Long userId, String account, String accountPassword, Long balance) {
+    public Account(User owner, String account, String accountPassword, Long balance) {
         isAccount(account);
 
-        this.userId = userId;
+        this.owner = owner;
         this.account = account;
         this.accountPassword = accountPassword;
         this.balance = balance;

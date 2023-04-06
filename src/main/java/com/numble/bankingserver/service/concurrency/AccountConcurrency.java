@@ -1,12 +1,12 @@
 package com.numble.bankingserver.service.concurrency;
 
 
-import com.numble.bankingserver.domain.Account;
+
 import com.numble.bankingserver.dto.DepositDto;
 import com.numble.bankingserver.dto.SendMoneyDto;
 import com.numble.bankingserver.dto.WithdrawDto;
 import com.numble.bankingserver.global.lock.LockManager;
-import com.numble.bankingserver.service.AccountService;
+import com.numble.bankingserver.service.concurrency.AccountWithLockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AccountConcurrency {
     private final LockManager lockManager;
-    private final AccountService accountService;
+    private final AccountWithLockService accountService;
 
     @Transactional
     public void sendWithLock(String fromAccount, String fromPassword, String toAccount, Long money) {
@@ -47,4 +47,6 @@ public class AccountConcurrency {
                 () -> accountService.withdrawMoney(withdrawDto)
         );
     }
+
+
 }

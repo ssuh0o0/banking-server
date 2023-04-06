@@ -55,7 +55,6 @@ class AccountServiceTest {
         //given
         DepositDto depositDto = DepositDto.builder()
                 .account("111-1111-111")
-                .loginId("test")
                 .money(3000L)
                 .build();
 
@@ -74,7 +73,6 @@ class AccountServiceTest {
         //given
         WithdrawDto withdrawDto = WithdrawDto.builder()
                 .account("111-1111-111")
-                .loginId("test")
                 .money(3000L)
                 .build();
 
@@ -108,7 +106,6 @@ class AccountServiceTest {
                 .build();
 
         SendMoneyDto sendMoneyDto = SendMoneyDto.builder()
-                .fromLoginId("test")
                 .fromAccount("111-1111-111")
                 .toAccount("222-2222-222")
                 .money(3000L)
@@ -116,7 +113,7 @@ class AccountServiceTest {
 
         //then
         userService.makeFriend(makeFriendDto);
-        accountService.sendMoney(sendMoneyDto);
+        accountService.send(sendMoneyDto);
         Account fromAccount = accountRepository.findByAccount(TEST_ACCOUNT).orElseThrow();
         Account toAccount = accountRepository.findByAccount("222-2222-222").orElseThrow();
 
@@ -132,8 +129,8 @@ class AccountServiceTest {
     void findMyAccount() throws Exception {
         //given
         FindMyAccountDto findMyAccountDto = FindMyAccountDto.builder()
-                .loginId("test")
-                .password("test123")
+                .account("111-1111-111")
+                .accountPassword("test123")
                 .build();
 
         //when
